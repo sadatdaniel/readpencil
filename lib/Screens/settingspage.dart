@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rss_reader/Screens/categories.dart';
+import 'package:rss_reader/Screens/daily.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             primaryColor: Color(0xFFfcfcfc), accentColor: Colors.black),
         home: DefaultTabController(
@@ -32,6 +35,35 @@ class _SettingsState extends State<Settings> {
               ),
               body: Column(
                 children: [
+                  GestureDetector(
+                    onTap: () {
+                      print("Got clicked in settings");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Categories()),
+                      );
+                    },
+                    child: ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+                      title: Text(
+                        "Categories",
+                        style: TextStyle(
+                          fontFamily: 'Spartan',
+                          fontWeight: FontWeight.w600,
+                          //fontSize: 14),
+                        ),
+                      ),
+                      //leading: Icon(Icons.lightbulb_outline),
+                      trailing: Icon(
+                        Icons.list_alt,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  //isThreeLine: true,
+
+                  //dense: true,
+
                   ListTile(
                     contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 0),
                     title: Text(
@@ -59,7 +91,7 @@ class _SettingsState extends State<Settings> {
                   ListTile(
                     contentPadding: EdgeInsets.fromLTRB(15, 0, 15, 0),
                     title: Text(
-                      "Notification Schedule",
+                      "Enable Javascript",
                       style: TextStyle(
                         fontFamily: 'Spartan',
                         fontWeight: FontWeight.w600,
@@ -70,12 +102,38 @@ class _SettingsState extends State<Settings> {
                       onTap: () {
                         print("Got clicked");
                       },
-                      child: Icon(Icons.notifications_active_outlined,
+                      child: Icon(Icons.subtitles_off_outlined,
                           color: Colors.black),
                     ),
                     //isThreeLine: true,
 
                     //dense: true,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      print("Got clicked in settings");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DailyNotification()),
+                      );
+                    },
+                    child: ListTile(
+                      contentPadding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      title: Text(
+                        "Notification Schedule",
+                        style: TextStyle(
+                          fontFamily: 'Spartan',
+                          fontWeight: FontWeight.w600,
+                          //fontSize: 14),
+                        ),
+                      ),
+                      trailing: Icon(Icons.notifications_active_outlined,
+                          color: Colors.black),
+                      //isThreeLine: true,
+
+                      //dense: true,
+                    ),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.fromLTRB(15, 0, 15, 0),

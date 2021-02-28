@@ -1,12 +1,15 @@
+import 'dart:async';
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:rss_reader/Screens/settingspage.dart';
-//import 'package:webfeed/domain/media/media.dart';
 import 'newstab.dart';
 import 'favoritestab.dart';
-//import 'topicpage.dart';
+import 'package:connectivity/connectivity.dart';
 
 //font
 //color
+
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
 
@@ -17,10 +20,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  StreamSubscription connectivityStream;
+  ConnectivityResult oldResult;
+
+  @override
+  void initState() {
+    super.initState();
+    connectivityStream = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult resNow) {
+      if (resNow == ConnectivityResult.none) {
+        print("No Connection");
+      } else if (oldResult == ConnectivityResult.none) {
+        print("Connected");
+      }
+      oldResult = resNow;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivityStream.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme:
           ThemeData(primaryColor: Color(0xFFfcfcfc), accentColor: Colors.black),
       home: OrientationBuilder(
@@ -67,14 +95,14 @@ Widget hello(context) {
         ),
         backgroundColor: Color(0xFFf2f2f2),
         bottom: TabBar(
-          //isScrollable: true,
+          // isScrollable: true,
 
           tabs: [
             Tab(
               child: Row(
                 children: [
                   Icon(
-                    Icons.rss_feed,
+                    Icons.rss_feed_sharp,
                     color: Colors.red,
                   ),
                   SizedBox(
@@ -164,5 +192,24 @@ Widget hello2(context) {
         ),
       ],
     ),
+  );
+}
+
+_showDialog(title, text, BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(text),
+        actions: <Widget>[
+          FlatButton(
+              child: Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              })
+        ],
+      );
+    },
   );
 }

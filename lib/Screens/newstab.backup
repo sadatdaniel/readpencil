@@ -1,0 +1,134 @@
+import 'package:flutter/material.dart';
+// import 'package:rss_reader/Functionality/getdata.dart';
+import 'package:webfeed/webfeed.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+
+class News extends StatefulWidget {
+  @override
+  _NewsState createState() => _NewsState();
+}
+
+class NewsClass {
+  String headline;
+  String url;
+  String author;
+
+  NewsClass(this.headline, this.url, this.author);
+}
+
+class _NewsState extends State<News> {
+  String link = 'https://omgubuntu.co.uk/rss';
+  GlobalKey<RefreshIndicatorState> _refreshKey;
+  var writerName = '';
+  RssFeed _feed;
+
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  updateFeed(feed) {
+    setState(() {
+      _feed = feed;
+    });
+  }
+
+  list() {
+    return ListView.separated(
+      itemCount: 20,
+      itemBuilder: (BuildContext context, int index) {
+        final item = _feed.items[index];
+        return ListTile(
+          onTap: () {
+            print("Hello");
+            loadBrowser(item.link);
+          },
+          contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+          title: Text(
+            item.title,
+            style: TextStyle(
+                fontFamily: 'Merriweather',
+                fontWeight: FontWeight.w600,
+                fontSize: 14),
+          ),
+          subtitle: Text(
+            _feed.title + " | " + item.dc.creator,
+            style: TextStyle(
+              fontFamily: 'Merriweather',
+
+              fontWeight: FontWeight.w600,
+              //color: Colors.black
+            ),
+          ),
+          trailing: GestureDetector(
+            onTap: () {
+              print(
+                item.pubDate.toString(),
+              );
+            },
+            child: Icon(Icons.favorite_border_rounded),
+          ),
+          //isThreeLine: true,
+
+          dense: true,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => Divider(height: 5),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: isFeedEmpty()
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                key: _refreshKey,
+                child: list(),
+                onRefresh: () => load(),
+              ),
+      ),
+    );
+  }
+
+  Future<RssFeed> getData() async {
+    try {
+      var client = http.Client();
+
+      var response = await client.get(link);
+      return RssFeed.parse(response.body);
+    } catch (e) {}
+    return null;
+  }
+
+  load() async {
+    getData().then((result) {
+      if (null == result || result.toString().isEmpty) {
+        return;
+      }
+      updateFeed(result);
+    });
+  }
+
+  isFeedEmpty() {
+    return null == _feed || null == _feed.items;
+  }
+
+  Future<void> loadBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+        enableDomStorage: true,
+      );
+    } else {
+      print("Could not launch");
+    }
+  }
+}
