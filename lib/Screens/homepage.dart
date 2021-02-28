@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:js';
 
 import 'package:flutter/material.dart';
 import 'package:rss_reader/Screens/settingspage.dart';
